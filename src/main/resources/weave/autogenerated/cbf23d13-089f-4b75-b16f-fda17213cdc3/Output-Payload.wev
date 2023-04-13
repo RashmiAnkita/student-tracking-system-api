@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_cbf23d13_089f_4b75_b16f_fda17213cdc3_Output_Payload = {
+  Student_ID: Number, 
+  Teacher: String, 
+  City: String, 
+  Age: String, 
+  Name: String, 
+  Contact: String, 
+  _?: Any
+}
+

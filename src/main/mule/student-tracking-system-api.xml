@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+
+    
+    <flow name="student-tracking-system-api-main">
+        <http:listener config-ref="student-tracking-system-api-httpListenerConfig" path="/api/*" doc:name="Listener">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="student-tracking-system-api-config" />
+		<error-handler ref="error_handler" />
+        
+    </flow>
+    <flow name="student-tracking-system-api-console">
+        <http:listener config-ref="student-tracking-system-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="student-tracking-system-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Resource Not Found">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\student\(student_Id):application\json:student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="bdc6cec5-dda9-4a8e-a315-0ff9e56d2e11" />
+		<flow-ref doc:name="delete-student-studentId" doc:id="8baeeff9-5dbc-4741-97cf-310b7c55fee6" name="delete-student-studentId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="4cb9e22f-adb8-4025-8eb0-e91455b3145d" />
+    </flow>
+    <flow name="delete:\teacher\(teacher_Id):application\json:student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="05759957-a16a-4667-a852-453d0ee74cf4" message="#['Flow Started' ++ flow.name]"/>
+		<flow-ref doc:name="delete-teacher-teacherId" doc:id="c89e864d-a4e7-4167-913d-1872edd5ad38" name="delete-teacher-teacherId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="d699e365-a9a4-40fc-a8ed-65eb04552ae9" message="#['Flow Ended' ++ flow.name]"/>
+    </flow>
+    <flow name="get:\student\(student_Id):student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="ead703a7-48e9-4e48-a866-513feb3b34b5" message="#['Flow Ended' ++ flow.name]"/>
+		<flow-ref doc:name="get-student-studentId" doc:id="b4e010cf-5f8e-4469-91ce-02a1567d3327" name="get-student-studentId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="af97d47a-12bc-4712-8f84-9519c8eda969" />
+    </flow>
+    <flow name="get:\teacher\(teacher_Id):student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="d7eaa2d2-88b0-487e-aa45-8fd08d32962b" />
+		<flow-ref doc:name="get-teacher-teacherId" doc:id="a2b56ab4-740a-48b8-884c-477cd44fc8b5" name="get-teacher-teacherId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="a856067e-5497-41ed-b498-1a2c424ca5bc" />
+    </flow>
+    <flow name="post:\student\(student_Id):application\json:student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="a503b0fb-ae97-430e-ab12-c09025cf3e91" message="#['Flow Started' ++ flow.name]"/>
+		<flow-ref doc:name="post-student-by-studentId" doc:id="a26f06cc-ddfb-45a2-b3bc-0e29e828c20c" name="post-student-by-studentId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="14f09c10-6620-44d5-8d9e-6e3158b5dd34" message="#['Flow Started' ++ flow.name]"/>
+    </flow>
+    <flow name="post:\teacher\(teacher_Id):application\json:student-tracking-system-api-config">
+		<logger level="INFO" doc:name="Log Started" doc:id="8a347519-9159-480c-bd90-29e0d6034531" message="#['Flow Started' ++ flow.name]"/>
+		<flow-ref doc:name="post-teacher-by-teacherId" doc:id="6416b84c-b53d-4959-983b-a40e04ca0c48" name="post-teacher-by-teacherId"/>
+		<logger level="INFO" doc:name="Log Ended" doc:id="d3f97502-d8f1-43b0-b881-e804d6cc2c0b" />
+    </flow>
+</mule>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="delete-student-studentId" doc:id="c613dcb2-fa2b-4b48-9336-33a76bc6e2d9" >
+		<logger level="INFO" doc:name="Log Started" doc:id="6e8bd0b3-4418-4289-a4b5-83a5de1e5736" message="#['Flow Started' ++ flow.name]"/>
+		<salesforce:delete doc:name="sfdc-delete" doc:id="feffb754-e650-484c-9424-f062a6626add" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="response" doc:id="aef12adb-f131-4892-91dd-d3438eefa3e2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="757ad184-c326-495f-8244-e9fcf3943f2e" />
+	</flow>
+	<flow name="delete-teacher-teacherId" doc:id="09cc2965-5c8b-4bc2-a755-4338f5864c22" >
+		<logger level="INFO" doc:name="Log Started" doc:id="685ef803-4122-4032-a2a5-8c42b4465bbf" message="#['Flow Ended' ++ flow.name]"/>
+		<salesforce:delete doc:name="sfdc-delete" doc:id="eb5ec0ff-5eca-4504-9939-e7c0bcabf647" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="response" doc:id="78cc9a34-9f96-435b-a62c-7a631036ab3f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="63fc2dcf-1715-4992-9a98-b8974f5fb50d" />
+	</flow>
+	<flow name="get-student-studentId" doc:id="cbf23d13-089f-4b75-b16f-fda17213cdc3" >
+		<logger level="INFO" doc:name="Log Started" doc:id="3c95d3ed-9e6a-4c14-9ada-4d60eedac3bd" />
+		<set-variable value="#[attributes.uriParams.student_Id]" doc:name="Student_ID" doc:id="a865e2e9-5ff5-48a2-a63e-d4e3d52cb6ca" variableName="Student_ID" />
+		<salesforce:query doc:name="sfdc-query" doc:id="e280f476-0f8f-4816-95b1-cd823dd6ad2a" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT FIELDS(ALL) FROM StudentDetail__c WHERE student_Id__c =:id LIMIT 200]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	'id': vars.Student_ID
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="response" doc:id="a5c8c913-968c-414b-be58-382d19113c43" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="20ff5de3-2ba5-486c-9a73-3448dd21b00f" />
+	</flow>
+	<flow name="get-teacher-teacherId" doc:id="49d04f8c-61a4-4095-a252-63eac0fb6a2b" >
+		<logger level="INFO" doc:name="Log Started" doc:id="1a94733b-4484-442a-88cd-cb5d88f6c8e9" />
+		<set-variable value="#[attributes.uriParams.teacher_Id]" doc:name="Teacher_ID" doc:id="d0651559-ada0-40b3-8df1-0fdb7b8d8c07" variableName="Teacher_ID"/>
+		<salesforce:query doc:name="sfdc-query" doc:id="7c6c8dff-5d56-4540-9053-b6784ade91f3" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT FIELDS(ALL) FROM TeacherDetail__c WHERE teacher_id__c =:id LIMIT 200]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[{
+	'id': vars.Teacher_ID
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="response" doc:id="e4f954c0-211a-4ed4-bcde-4f67f60a37c7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="64276229-beb4-4734-9031-ca878ec438b8" />
+	</flow>
+	<flow name="post-student-by-studentId" doc:id="fd3ed0c9-b58e-4bee-8d26-9d0ff6c739f1" >
+		<logger level="INFO" doc:name="Log Started" doc:id="89976b90-0ec2-4b4e-bb17-a9a3ad34036c" message="#['Flow Started' ++ flow.name]"/>
+		<ee:transform doc:name="request mapping" doc:id="fb43f4a8-192a-49b2-8d47-2a769aea0b1e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+  student_Id__c: payload.Student_ID,
+  name__c: payload.Name,
+  contact__c: payload.Contact,
+  age__c: payload.Age,
+  city__c: payload.City,
+  Teacher__c: payload.Teacher
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="StudentDetail__c" doc:name="sfdc-create" doc:id="b2be0b70-1cf0-4f86-b306-c357b4ac75e2" config-ref="Salesforce_Config"/>
+		<ee:transform doc:name="response" doc:id="8efcbe0c-09d6-45f0-8b93-d62b7062465a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message" : "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="ce14877e-351f-47bb-a5ab-fa6e67fec5a9" />
+	</flow>
+	<flow name="post-teacher-by-teacherId" doc:id="76503e73-857d-4804-982d-d81fcce99352" >
+		<logger level="INFO" doc:name="Log Started" doc:id="d77a430b-c2cc-4ddf-b4cd-23fc96e0c08b" message="#['Flow Started' ++ flow.name]"/>
+		<ee:transform doc:name="request mapping" doc:id="12331679-7fa0-4507-85e9-831215d6a5ef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+  teacher_id__c: payload.Teacher_ID,
+  Name: payload.Name,
+  contact__c: payload.Contact,
+  age__c: payload.Age,
+  email__c: payload.email,
+  city__c: payload.City,
+  salary__c: payload.Salary
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="sfdc-create" doc:id="48492485-68a7-467a-b6fe-1e2d93614874" config-ref="Salesforce_Config" type="TeacherDetail__c"/>
+		<ee:transform doc:name="response" doc:id="f7b4a454-5c02-4ea2-84d3-2e25534fc8b4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"message" : "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Ended" doc:id="67841c28-623a-4c60-a105-6d5ac9a2d389" />
+	</flow>
+</mule>

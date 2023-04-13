@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_cbf23d13_089f_4b75_b16f_fda17213cdc3_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| student_Id?: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

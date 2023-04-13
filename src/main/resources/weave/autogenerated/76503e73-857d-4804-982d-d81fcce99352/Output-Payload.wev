@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_76503e73_857d_4804_982d_d81fcce99352_Output_Payload = {
+  Salary: String, 
+  Teacher_ID: Number, 
+  City: String, 
+  Age: String, 
+  email: String, 
+  Name: String, 
+  Contact: String, 
+  _?: Any
+}
+
